@@ -52,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
   BitmapDescriptor nearByIcon;
 
   List<NearbyAvailableDrivers> availableDrivers;
-  List<Marker> driverMarker = [];
+  // List<Marker> driverMarker = [];
 
   String state = "normal";
 
@@ -65,7 +65,7 @@ class _MainScreenState extends State<MainScreen> {
     // TODO: implement initState
     super.initState();
 
-    AssistantMethods.getCurrentOnlineUserInfo();
+    // AssistantMethods.getCurrentOnlineUserInfo();
   }
 
   void saveRideRequest() {
@@ -240,28 +240,11 @@ class _MainScreenState extends State<MainScreen> {
     newGoogleMapController
         .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
 
-    String address =
-        await AssistantMethods.searchCoordinateAddress(position, context);
-    print("This is your Address :: " + address);
-
-    initGeoFireListener();
-  }
-
-  Future locatePositionAsync() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    currentPosition = position;
-
-    LatLng latLngPosition = LatLng(position.latitude, position.longitude);
-
-    CameraPosition cameraPosition =
-        new CameraPosition(target: latLngPosition, zoom: 14);
-    newGoogleMapController
-        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
-
-    String address =
-        await AssistantMethods.searchCoordinateAddress(position, context);
-    print("This is your Address :: " + address);
+    // if (context != null) {
+    //   String address =
+    //       await AssistantMethods.searchCoordinateAddress(position, context);
+    //   print("This is your Address :: " + address);
+    // }
 
     initGeoFireListener();
   }
@@ -365,7 +348,7 @@ class _MainScreenState extends State<MainScreen> {
       body: Stack(
         children: [
           GoogleMap(
-            markers: driverMarker.toSet(),
+            markers: markersSet,
             padding: EdgeInsets.only(bottom: bottomPaddingOfMap),
             mapType: MapType.normal,
             myLocationButtonEnabled: true,
@@ -382,9 +365,6 @@ class _MainScreenState extends State<MainScreen> {
               });
 
               locatePosition();
-
-              availableDrivers = GeoFireAssistant.nearByAvailableDriversList;
-              searchNearestDriver().then(null);
             },
           ),
 
@@ -947,7 +927,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future searchNearestDriver() async {
-    List<Marker> temp = [];
+    Set<Marker> temp = {};
 
     availableDrivers.forEach((driver) async {
       var marker = await onTapDriverMarker(driver);
@@ -956,7 +936,7 @@ class _MainScreenState extends State<MainScreen> {
     });
 
     setState(() {
-      driverMarker = temp;
+      markersSet = temp;
     });
     // if(availableDrivers.length == 0)
     // {
